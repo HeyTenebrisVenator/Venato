@@ -1,0 +1,94 @@
+import os
+import requests
+from colorama import Fore
+import time
+
+banner = f"""           .       .                   .       .      .     .      .
+          .    .         .    .            .    {Fore.BLUE} ______{Fore.RESET}
+      .           .             .               {Fore.BLUE}////////{Fore.RESET}
+                .    .   ________   .  .      {Fore.BLUE}///////// {Fore.RESET}    .    .
+           .            |.____.  /\        .{Fore.BLUE}/////////  {Fore.RESET}  .              .
+    .                 .//      \/  |\     {Fore.BLUE}/////////{Fore.RESET}
+       .       .    .//          \ |  \ {Fore.BLUE}///////// {Fore.RESET}      .     .   .         .
+                    ||.    .    .| |  /{Fore.BLUE}//////// {Fore.RESET}.     .
+     .    .         ||           | |//`,{Fore.BLUE}///// {Fore.RESET}               .
+             .       \\        ./ //  /  \{Fore.BLUE}/  {Fore.RESET} .                            .    
+  .                    \\.___./ //\` '   ,_\  {Fore.RESET}   .     .
+          .           .     {Fore.BLUE}\ //////\ ,{Fore.RESET} /   \ {Fore.RESET}                .    .
+                       .    {Fore.BLUE}/////////{Fore.RESET} \|  '  |  {Fore.RESET}  .
+      .        .          {Fore.BLUE}/////////{Fore.RESET} .   \ _ /          .
+                        {Fore.BLUE}///////// {Fore.RESET}                             .
+                 .   .{Fore.BLUE}///////// {Fore.RESET}    .     .
+         .           {Fore.BLUE}--------{Fore.RESET}   .                  ..             .
+  .               .        .         .                       .
+.              .                            .             .
+{Fore.GREEN}____   ____         .          __     {Fore.RESET}     
+{Fore.GREEN}\   \ /   /____   ____ _____ _/  |_  ____  {Fore.RESET}         .                 .
+ {Fore.GREEN}\ . Y   // __ \ /    \\__  \\  .__\/  _ \ {Fore.RESET} .  
+  {Fore.BLUE}\     /\  .__/|   |  \/ __ \|  | (  <_> ){Fore.RESET}
+   {Fore.BLUE}\___/  \___  >___|  (____  /__|  \____/ {Fore.RESET}              . 
+              {Fore.BLUE}\/     \/     \/{Fore.RESET}    
+              .                  .                    .              .         
+{Fore.RESET}"""
+
+second_banner = f"""
+{Fore.YELLOW}o               {Fore.WHITE}.        {Fore.BLUE}___---___                    {Fore.WHITE}.                   
+       {Fore.WHITE}.              {Fore.WHITE}.{Fore.GREEN}--\        --.     {Fore.WHITE}.     {Fore.WHITE}.         {Fore.WHITE}.
+                    {Fore.WHITE}.{Fore.GREEN}/.;_.\     {Fore.GREEN}__/~ {Fore.BLUE}\.     
+                   {Fore.GREEN}/;  / `-'  {Fore.GREEN}__\    . {Fore.BLUE}\                            
+ {Fore.WHITE}.        {Fore.WHITE}.       {Fore.GREEN}/ ,--'     {Fore.GREEN}/ .   .;   {Fore.BLUE}\        {Fore.WHITE}|
+                 {Fore.GREEN}| .|       {Fore.GREEN}/       __   {Fore.BLUE}|      {Fore.WHITE}-O-       {Fore.WHITE}.
+                {Fore.GREEN}|__/    {Fore.GREEN}__ |  . ;   \ | . |      {Fore.WHITE}|
+                {Fore.BLUE}|      {Fore.GREEN}/  \\_    . ;| \___|{Fore.RESET}    
+ """
+
+print(banner)
+
+OS = "W"  #change here to Windows (W) or Linux (L)
+
+url = input("What is the URL to track?  >>  ")
+try:
+    print("Tracking...")
+    requests.get(url)
+    print("Done!")
+except Exception as e:
+    print("ERROR WHILE TRACKING...\nDetails: ", e)
+    exit()
+timer = float(input("Who many seconds to repeat the request (sec)?  >>  "))
+
+print("Starting...")
+while True:
+
+    time.sleep(timer)
+
+    req = requests.get(url)
+    if OS == "L":
+        os.system("clear")
+    elif OS == "W":
+        os.system("cls")
+    else:
+        pass
+    try:
+        headers = req.headers
+        headers_final = ''
+        for a, b in headers.items():
+            headers_final+= f"{a}:{b}\n"
+        cookies = req.cookies.items()
+        cookies_final = ''
+        for a,b in cookies:
+            cookies_final += f'{a}: {b}\n'
+        status_code = req.status_code
+        if status_code == 200:
+            color = Fore.GREEN
+        elif status_code == 403:
+            color = Fore.RED
+        elif status_code == 404:
+            color = Fore.YELLOW
+        elif status_code == 300 or status_code == 301 or status_code == 302 or status_code == 303 or status_code == 304:
+            color = Fore.LIGHTGREEN_EX
+        elif status_code == 500:
+            color = Fore.WHITE
+        report = f"\n\n{Fore.RESET}------------------------------------------------\n\n\nStatus code: {color}{status_code}{Fore.RESET}\n\n\n{Fore.CYAN}Cookies:\n{Fore.RESET}\n{cookies_final}\n\n\n{Fore.CYAN}Headers:{Fore.RESET} {headers_final}"
+        print(second_banner + f"                  {Fore.GREEN}{url}" + report + Fore.RESET)
+    except Exception as e:
+        print("Something is wrong...", e)
